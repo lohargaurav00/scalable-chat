@@ -1,14 +1,21 @@
-import express from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import "dotenv/config";
 
-const app = express();
+import onConnection from "./services/sockets";
 
+const httpServer = createServer();
 const PORT = process.env.PORT || 8000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+export const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    allowedHeaders: ["*"],
+  },
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-});
+io.on("connection", onConnection);
 
+httpServer.listen(PORT, () => {
+  console.log(`listening on port:${PORT}`);
+});
